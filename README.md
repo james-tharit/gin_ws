@@ -1,7 +1,5 @@
 # gin_ws
-Gin webservice integrated with MongoDB wrap with docker compose
-
-Starter of Go, Gin webservice integrated with Mongodb and DockerCompose
+Starter of Gin webservice integrated with Mongodb and DockerCompose
 
 ## Start Application with Docker compose
 ```shell
