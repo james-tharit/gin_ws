@@ -6,12 +6,12 @@ WORKDIR /app
 
 ADD go.mod .
 ADD go.sum .
+ADD .air.toml .
 
 RUN go mod download
-ADD . .
 
-RUN go install -mod=mod github.com/githubnemo/CompileDaemon
+RUN go install github.com/cosmtrek/air@latest
 
 EXPOSE 8080
 
-ENTRYPOINT CompileDaemon --build="go build main.go" --command=./main
+ENTRYPOINT air -c .air.toml
