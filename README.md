@@ -1,6 +1,6 @@
 # gin_ws
-Starter of Gin webservice integrated with Mongodb and DockerCompose
-
+Starter of Gin webservice integrated with Mongodb and DockerCompose.
+**Hot reload integrated with [Air](https://github.com/cosmtrek/air)**
 ## Start Application with Docker compose
 ```shell
 docker compose up
