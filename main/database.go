@@ -1,4 +1,4 @@
-package db
+package main
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 
 // This is a user defined method to close resources.
 // This method closes mongoDB connection and cancel context.
-func Close(client *mongo.Client, ctx context.Context,
+func (app *application) databaseDisconnect(client *mongo.Client, ctx context.Context,
 	cancel context.CancelFunc) {
 
 	// CancelFunc to cancel to context
@@ -37,7 +37,7 @@ func Close(client *mongo.Client, ctx context.Context,
 // context.CancelFunc will be used to cancel context and
 // resource associated with it.
 
-func Connect(uri string) (*mongo.Client, context.Context,
+func (app *application) databaseConnect(uri string) (*mongo.Client, context.Context,
 	context.CancelFunc, error) {
 
 	// ctx will be used to set deadline for process, here
@@ -53,7 +53,7 @@ func Connect(uri string) (*mongo.Client, context.Context,
 // This is a user defined method that accepts
 // mongo.Client and context.Context
 // This method used to ping the mongoDB, return error if any.
-func Ping(client *mongo.Client, ctx context.Context) error {
+func (app *application) checkDatabaseConnection(client *mongo.Client, ctx context.Context) error {
 
 	// mongo.Client has Ping to ping mongoDB, deadline of
 	// the Ping method will be determined by cxt
@@ -62,6 +62,6 @@ func Ping(client *mongo.Client, ctx context.Context) error {
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		return err
 	}
-	fmt.Println("connected successfully")
+	fmt.Println("Mongo connected successfully")
 	return nil
 }
