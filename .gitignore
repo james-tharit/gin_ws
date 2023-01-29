@@ -13,6 +13,8 @@
 
 # Output of Air package (live-reload)
 /tmp
+# Output of database cache
+/mongo_data
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
