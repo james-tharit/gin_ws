@@ -2,34 +2,26 @@ package main
 
 import (
 	"fmt"
+	"gin_ws/repository"
 	"log"
 	"net/http"
 )
 
 const port = 8080
 
-type application struct{}
+type application struct {
+	DB repository.MongoDatabase
+}
 
 func main() {
 	// set application config
 	var app application
 
-	// Get Client, Context, CancelFunc and
-	// err from connect method.
-	client, ctx, cancel, err := app.databaseConnect("mongodb://mongo:27017")
+	client, err := app.initiateMongo()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-
-	if err != nil {
-		print("connect error", err)
-	}
-	// Release resource when the main
-	// function is returned.
-	defer app.databaseDisconnect(client, ctx, cancel)
-
-	// Check mongoDB connection with Ping method
-	app.checkDatabaseConnection(client, ctx)
+	app.DB = repository.MongoDatabase{Client: client}
 
 	// start a web server
 	err = http.ListenAndServe(fmt.Sprintf(":%d", port), app.routes())

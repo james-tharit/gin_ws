@@ -10,9 +10,31 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// This is a user defined method to close resources.
-// This method closes mongoDB connection and cancel context.
-func (app *application) databaseDisconnect(client *mongo.Client, ctx context.Context,
+func (app *application) initiateMongo() (*mongo.Client, error) {
+	// Get Client, Context, CancelFunc and
+	// err from connect method.
+	client, ctx, cancel, err := databaseConnect("mongodb://mongo:27017")
+	if err != nil {
+		panic(err)
+	}
+
+	if err != nil {
+		print("connect error", err)
+	}
+	// Release resource when the main
+	// function is returned.
+	defer databaseDisconnect(client, ctx, cancel)
+
+	// Check mongoDB connection with Ping method
+	err = checkDatabaseConnection(client, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func databaseDisconnect(client *mongo.Client, ctx context.Context,
 	cancel context.CancelFunc) {
 
 	// CancelFunc to cancel to context
@@ -30,14 +52,7 @@ func (app *application) databaseDisconnect(client *mongo.Client, ctx context.Con
 	}()
 }
 
-// This is a user defined method that returns mongo.Client,
-// context.Context, context.CancelFunc and error.
-// mongo.Client will be used for further database operation.
-// context.Context will be used set deadlines for process.
-// context.CancelFunc will be used to cancel context and
-// resource associated with it.
-
-func (app *application) databaseConnect(uri string) (*mongo.Client, context.Context,
+func databaseConnect(uri string) (*mongo.Client, context.Context,
 	context.CancelFunc, error) {
 
 	// ctx will be used to set deadline for process, here
@@ -50,15 +65,7 @@ func (app *application) databaseConnect(uri string) (*mongo.Client, context.Cont
 	return client, ctx, cancel, err
 }
 
-// This is a user defined method that accepts
-// mongo.Client and context.Context
-// This method used to ping the mongoDB, return error if any.
-func (app *application) checkDatabaseConnection(client *mongo.Client, ctx context.Context) error {
-
-	// mongo.Client has Ping to ping mongoDB, deadline of
-	// the Ping method will be determined by cxt
-	// Ping method return error if any occurred, then
-	// the error can be handled.
+func checkDatabaseConnection(client *mongo.Client, ctx context.Context) error {
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		return err
 	}
