@@ -13,7 +13,7 @@ import (
 func (app *application) initiateMongo() (*mongo.Client, error) {
 	// Get Client, Context, CancelFunc and
 	// err from connect method.
-	client, ctx, cancel, err := databaseConnect("mongodb://mongo:27017")
+	client, ctx, cancel, err := connect("mongodb://mongo:27017")
 	if err != nil {
 		panic(err)
 	}
@@ -23,10 +23,10 @@ func (app *application) initiateMongo() (*mongo.Client, error) {
 	}
 	// Release resource when the main
 	// function is returned.
-	defer databaseDisconnect(client, ctx, cancel)
+	defer disconnect(client, ctx, cancel)
 
 	// Check mongoDB connection with Ping method
-	err = checkDatabaseConnection(client, ctx)
+	err = connectionStatus(client, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (app *application) initiateMongo() (*mongo.Client, error) {
 	return client, nil
 }
 
-func databaseDisconnect(client *mongo.Client, ctx context.Context,
+func disconnect(client *mongo.Client, ctx context.Context,
 	cancel context.CancelFunc) {
 
 	// CancelFunc to cancel to context
@@ -52,7 +52,7 @@ func databaseDisconnect(client *mongo.Client, ctx context.Context,
 	}()
 }
 
-func databaseConnect(uri string) (*mongo.Client, context.Context,
+func connect(uri string) (*mongo.Client, context.Context,
 	context.CancelFunc, error) {
 
 	// ctx will be used to set deadline for process, here
@@ -65,7 +65,7 @@ func databaseConnect(uri string) (*mongo.Client, context.Context,
 	return client, ctx, cancel, err
 }
 
-func checkDatabaseConnection(client *mongo.Client, ctx context.Context) error {
+func connectionStatus(client *mongo.Client, ctx context.Context) error {
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		return err
 	}
