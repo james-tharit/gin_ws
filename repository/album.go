@@ -36,8 +36,9 @@ func (m *MongoDatabase) Sample() (*mongo.InsertOneResult, error) {
 func (m *MongoDatabase) AllAlbums() ([]models.Album, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-
+	print("before")
 	collection := m.Client.Database("db").Collection("Album")
+	print("after")
 	cur, err := collection.Find(ctx, bson.D{{}})
 
 	var results []models.Album

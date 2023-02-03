@@ -22,7 +22,9 @@ func main() {
 		log.Fatal(err)
 	}
 	app.DB = repository.MongoDatabase{Client: client}
-
+	// Release resource when the main
+	// function is returned.
+	defer app.disposeMongo(client)
 	// start a web server
 	err = http.ListenAndServe(fmt.Sprintf(":%d", port), app.routes())
 	if err != nil {
